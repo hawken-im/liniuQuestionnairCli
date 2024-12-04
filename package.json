@@ -35,6 +35,7 @@
   ],
   "author": "",
   "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "@babel/runtime": "^7.24.4",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",

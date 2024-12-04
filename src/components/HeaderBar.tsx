@@ -1,4 +1,3 @@
-import * as React from 'react';
 import liniuLogo from '../resources/liniuLogo.png';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -8,20 +7,20 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 function HeaderBar({progress}: {progress: number}) {
   return (
-      <Container maxWidth="xl" sx={{bgcolor: '#fff', p: 0}}>
-        <Toolbar>
+      <Container maxWidth="xl" disableGutters sx={{bgcolor: '#fff', width: '100%'}}>
+        <Toolbar sx={{height: '80px', display: 'flex', justifyContent: 'space-between'}}>
           <Box
             sx={{
               backgroundImage: `url(${liniuLogo})`,
-              backgroundSize: 'contain',
+              backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
-              width: '100px',
-              height: '100px'
+              width: '120px',
+              height: '54px',
             }} />
 
-          <Box sx={{ flexGrow: 0 }}>
-            <Typography variant="h6" noWrap>
+          <Box sx={{ flex: 1 }}> 
+            <Typography variant="body2" sx={{ fontSize: {xs:'22px', md:'28px'},fontWeight: 'regular', textAlign: 'right', color: '#292929', mr: 2}}> 
               「常态焕新」定制清洁服务
             </Typography>
           </Box>
