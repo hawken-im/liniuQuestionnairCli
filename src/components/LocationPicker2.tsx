@@ -9,6 +9,7 @@ export default function MapContainer({ onCenterChange }: Props) { // 传入回�
   const mapContainerRef = useRef(null);
   const [center, setCenter] = useState([116.397428, 39.90923]);
   let map = null;
+  let marker = null;
 
   useEffect(() => {
     (window as any)._AMapSecurityConfig = {
@@ -25,16 +26,27 @@ export default function MapContainer({ onCenterChange }: Props) { // 传入回�
           map = new AMap.Map(mapContainerRef.current, {
             viewMode: "3D",
             zoom: 11,
-            center: [116.397428, 39.90923],
+            center: center,
           });
+
+          marker = new AMap.Marker({
+            icon: "//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
+            position: center,
+            offset: new AMap.Pixel(-13, -30)
+          });
+          // @ts-ignore
+          marker.setMap(map);
+
           // @ts-ignore
           map.on('moveend', () => {
             // @ts-ignore
             const newCenter = map.getCenter();
-
             const lng = newCenter.lng;
             const lat = newCenter.lat;
             setCenter([lng, lat]); 
+            //refresh marker
+            // @ts-ignore
+            marker.setPosition([lng, lat]);
             onCenterChange([lng, lat]); 
           });
         } else {
@@ -50,7 +62,7 @@ export default function MapContainer({ onCenterChange }: Props) { // 传入回�
         (map as any).destroy();
       }
     };
-  }, [onCenterChange]); // 将 onCenterChange 添加到依赖数组中
+  }, []); // 将 onCenterChange 添加到依赖数组中
 
   return (
     <div 

@@ -1,4 +1,4 @@
-import { SetStateAction, useState } from 'react';
+import { useState } from 'react';
 import { useLoad } from '@tarojs/taro'
 import './index.css'
 import Container from '@mui/material/Container';
