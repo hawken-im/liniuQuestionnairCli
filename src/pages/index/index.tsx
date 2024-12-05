@@ -61,7 +61,7 @@ export default function Index () {
                   <p>坐标: {(selectedLocation as any).location}</p>
                 </div>
               ) : (
-                <p>请选择地址</p>
+                <p>请选择地址  完成</p>
               )}
             </div>
           </CardContent>

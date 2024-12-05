@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import AMapLoader from '@amap/amap-jsapi-loader';
+import { Checkbox, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
 
 interface Props {
   onCenterChange: (center: [number, number]) => void;
@@ -14,6 +15,21 @@ export default function MapContainer({ onCenterChange }: Props) {
     let map: any = null; 
     let marker: any = null; 
   //let placeSearch: any = null; // 声明 placeSearch 变量
+
+  const [checked, setChecked] = useState([1]);
+
+  const handleToggle = (value: number) => () => {
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked];
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    setChecked(newChecked);
+  };
 
   useEffect(() => {
     (window as any)._AMapSecurityConfig = {
@@ -52,7 +68,7 @@ export default function MapContainer({ onCenterChange }: Props) {
                     type: '商务住宅',
                     pageSize: 20,
                     pageIndex: 1,
-                    city: result.city, 
+                    //city: result.city, 
                     citylimit: false, 
                     map: map,
                     //panel: "panel",
@@ -66,10 +82,12 @@ export default function MapContainer({ onCenterChange }: Props) {
             });
           };
 
-          getPlaceSearch(); // 初始化时获取城市信息
+          getPlaceSearch(); 
 
           const searchNearby = (lng: number, lat: number) => {
             if (placeSearchRef.current) { // 确保 placeSearch 已经初始化
+                //placeSearchRef.current.clear();
+                //getPlaceSearch();
               placeSearchRef.current.searchNearBy('', [lng, lat], 500, function (status, result) {
                 if (status === 'complete' && result.info === 'OK') {
                   setNearbyPlaces(result.poiList.pois);
@@ -120,14 +138,38 @@ export default function MapContainer({ onCenterChange }: Props) {
         id="container"
         style={{ height: "400px", width: '100%' }}
       />
-      <div id="nearbyPlaces">
+      <List dense sx={{ width: '100%', position: 'relative', overflow: 'auto', maxHeight: '200px' }}>
+      {nearbyPlaces.map((place) => {
+        const labelId = `checkbox-list-secondary-label-${place.id}`;
+        return (
+        <ListItem
+         key={place.id}
+         secondaryAction={
+           <Checkbox
+             edge="end"
+             onChange={handleToggle(place.id)}
+             checked={checked.includes(place.id)}
+             inputProps={{ 'aria-labelledby': labelId }}
+           />
+         }
+         disablePadding
+       >
+         <ListItemButton>
+           <ListItemText id={labelId} primary={`${place.name}`} />
+           <ListItemText id={labelId} primary={`${place.address}`} />
+         </ListItemButton>
+       </ListItem>
+        )
+      })}
+      </List>
+      {/* <div id="nearbyPlaces">
         {nearbyPlaces.map((place) => (
           <div key={place.id}>
             <h5>{place.name}</h5>
             <p>{place.address}</p>
           </div>
         ))}
-      </div>
+      </div> */}
       {/* <div id="panel">
       </div> */}
     </div>
