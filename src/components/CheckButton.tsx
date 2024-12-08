@@ -14,6 +14,7 @@ const CheckButton = ({
         borderColor: checked ? "primary.main" : "#828282",
         color: "#292929",
         fontSize: '18px',
+        fontWeight: 'regular',
       }}
       {...rest} // 将所有其他 props 传递给 Button 组件
     >
