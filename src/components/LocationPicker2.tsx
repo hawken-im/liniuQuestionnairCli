@@ -3,7 +3,7 @@ import AMapLoader from '@amap/amap-jsapi-loader';
 import { Checkbox, List, ListItem, ListItemButton, ListItemText, TextField } from '@mui/material';
 
 interface Props {
-  onCenterChange: (center: [number, number]) => void;
+  onPlaceChange: (name: string, address: string) => void;
 }
 
 // 定义 debounce 函数
@@ -15,7 +15,7 @@ function debounce(func: any, wait: number) {
   };
 }
 
-export default function MapContainer({ onCenterChange }: Props) {
+export default function MapContainer({ onPlaceChange }: Props) {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const [nearbyPlaces, setNearbyPlaces] = useState<any[]>([]);
     //const centerRef = useRef<[number, number]>([103.874848, 30.617516]);
@@ -184,7 +184,7 @@ export default function MapContainer({ onCenterChange }: Props) {
             const newCenter = map.getCenter();
             marker.setPosition(newCenter);
             //setCenter([newCenter.lng, newCenter.lat]);
-            onCenterChange([newCenter.lng, newCenter.lat]);
+            //onCenterChange([newCenter.lng, newCenter.lat]);
             searchNearby(newCenter.lng, newCenter.lat); 
           });
 
@@ -227,7 +227,10 @@ export default function MapContainer({ onCenterChange }: Props) {
          }
          disablePadding
        >
-         <ListItemButton onClick={() => handlePlaceClickRef.current?.(place.location.lng, place.location.lat)}>
+         <ListItemButton onClick={() => {
+            handlePlaceClickRef.current?.(place.location.lng, place.location.lat);
+            onPlaceChange(place.name,place.address);
+          }}>
            <ListItemText id={labelId} primary={`${place.name}`} />
            <ListItemText id={labelId} primary={`${place.address}`} />
          </ListItemButton>
