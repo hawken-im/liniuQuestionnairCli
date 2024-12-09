@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import AMapLoader from '@amap/amap-jsapi-loader';
-import { Box, Button, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemText, TextField, Typography } from '@mui/material';
+import { Box, Button, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemText, Stack, TextField, Typography } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
+import SearchIcon from '@mui/icons-material/Search';
 
 interface Props {
   onPlaceChange: (name: string, address: string) => void;
@@ -21,8 +22,8 @@ export default function MapContainer({ onPlaceChange }: Props) {
 
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [selectedIndex, setSelectedIndex] = useState(1);
-    const [showCancelButton, setShowCancelButton] = useState(false);
-    const [textFieldFocus, setTextFieldFocus] = useState(false);
+    //const [textFieldFocus, setTextFieldFocus] = useState(false);
+    const [searchOn, setSearchOn] = useState(false);
 
     const handleClearClick = () => {
         const textField = document.getElementById('tip-input') as HTMLInputElement;
@@ -30,22 +31,12 @@ export default function MapContainer({ onPlaceChange }: Props) {
     }
   
     const handleFocus = () => {
-      setShowCancelButton(true);
-      setTextFieldFocus(true);
+      setSearchOn(true);
+      //setTextFieldFocus(true);
     };
   
     const handleBlur = () => {
-      setShowCancelButton(false);
-      setTextFieldFocus(false);
-    };
-  
-    const handleCancelClick = () => {
-      setShowCancelButton(false);
-      // 通过ref获取TextField的DOM元素并使其失去焦点
-      if (textFieldFocus) {
-        const textField = document.getElementById('tip-input');
-        if (textField){textField.blur(); }
-      }
+      //setTextFieldFocus(false);
     };
 
     const handleListItemClick = (
@@ -203,8 +194,8 @@ export default function MapContainer({ onPlaceChange }: Props) {
               });
           });
 
-
           map.on('moveend', () => {
+            setSearchOn(false);
             const newCenter = map.getCenter();
             marker.setPosition(newCenter);
             //setCenter([newCenter.lng, newCenter.lat]);
@@ -232,7 +223,7 @@ export default function MapContainer({ onPlaceChange }: Props) {
       <div
         ref={mapContainerRef}
         id="container"
-        style={{ height: windowHeight*0.5, width: '100%' }}
+        style={{ height: (searchOn ? windowHeight*0.25 : windowHeight*0.5), width: '100%' }}
       />
       <Box sx={{display:"flex", flexDirection:"row", px:1, alignItems:"center"}}>
         <TextField
@@ -246,24 +237,40 @@ export default function MapContainer({ onPlaceChange }: Props) {
             input: {
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton>
-                    <ClearIcon color='primary' sx={{fontSize:"18px"}}
-                      onClick={()=>{
-                        handleClearClick();
-                      }}/>
-                  </IconButton>
+                  { searchOn ?
+                   <Button type="submit" variant='text' size='small' 
+                      sx={{fontSize: '18px'}}
+                      onClick={
+                        (event) => {
+                          event.preventDefault();
+                          const textField = document.getElementById('tip-input') as HTMLInputElement;
+                          if (textField && textField.value !== "") {
+                            placeSearchRef.current.search(textField.value, function (status: any, result: any) {
+                              if (status === 'complete' && result.info === 'OK') {
+                                setNearbyPlaces(result.poiList.pois);
+                              } else {
+                                console.error('地点搜索失败', result);
+                              }
+                            });
+                          }
+                        }
+                      }>
+                        搜索
+                    </Button> :
+                    <IconButton>
+                      <ClearIcon color='primary' sx={{fontSize:"18px"}}
+                        onClick={()=>{
+                          handleClearClick();
+                        }}/>
+                    </IconButton>
+                  }
                 </InputAdornment>
               ),
             },
           }}
         />
-        {showCancelButton && (
-          <Button variant='text' size='small' 
-            sx={{fontSize: '18px'}}
-            onClick={handleCancelClick}>取消</Button>
-          )}
       </Box>
-      <List dense sx={{ width: '100%', position: 'relative', overflow: 'auto', maxHeight: '200px' }}>
+      <List dense sx={{ width: '100%', position: 'relative', overflow: 'auto', maxHeight:(searchOn ? '320px' : '200px') }}>
       {nearbyPlaces.map((place) => {
         const labelId = `list-label-${place.id}`;
         return (

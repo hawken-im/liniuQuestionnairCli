@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLoad } from '@tarojs/taro'
 import Container from '@mui/material/Container';
 import AppBar from '@mui/material/AppBar';
-import { Box, Button, CssBaseline, InputAdornment, Stack, TextField, Toolbar, Typography } from '@mui/material';
+import { Box, Button, CssBaseline, IconButton, InputAdornment, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import HeaderBar from '../../components/HeaderBar';
 import CheckButton from '@/components/CheckButton';
 import CheckButtonWithPic from '@/components/CheckButtonWithPic';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ClearIcon from '@mui/icons-material/Clear';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import LocationPicker2 from '@/components/LocationPicker2';
 import BottomSheet from '@/components/BottomSheet';
 import QuestionCard from '@/components/QuestionCard';
@@ -33,7 +35,17 @@ export default function Index () {
   const [houseStyle, setHouseStyle] = useState<number | null>(null);//4
   const [hallFloor, setHallFloor] = useState<number | null>(null);//5
 
+  const [telNum, setTelNum] = useState<number | null>(null);
+  const telInputRef = useRef<HTMLInputElement>(null); 
+
   const [answered, setAnswered] = useState("");
+
+  const handleClearClick = () => {
+    setTelNum(null);
+    if (telInputRef.current) {
+      telInputRef.current.focus(); 
+    }
+  }
 
   const handleCenterChange = (name:string, address:string) => {
     setPlace(`${name}`);
@@ -92,7 +104,7 @@ export default function Index () {
             )}
           {!showModal && <HeaderBar progress={((answered.match(/A/g) || []).length)/NumOfQuestions*100} />}
       </AppBar>
-      <Box sx={{px: 4, py: 2, bgcolor: '#f3f3f3', mb:10}}>
+      <Box sx={{px: 4, py: 2, bgcolor: '#f3f3f3', mb:{xs: 14, md: 24}}}>
         <Typography variant="h6" sx={{fontSize: '20px', fontWeight: 'regular', color: '#292929', mt: 2}}>完善报名信息，</Typography>
         <Typography variant="h6" sx={{fontSize: '19px', fontWeight: 'regular', color: '#292929', mt: 2}}>即可有机会成为里牛清洁定制体验官!</Typography>
         <QuestionCard number={1}>
@@ -240,6 +252,7 @@ export default function Index () {
             justifyContent: 'center', 
             alignItems: 'center',
             p: 3, // 添加 padding
+            mt: -8,
             mb: 4,
           }}
         >
@@ -258,13 +271,53 @@ export default function Index () {
         )}
         <Box sx={{display:"flex", flexDirection:"row", height:"24px"}}>
           <Box sx={{flexGrow: 1}} />
-          <Button variant="text" size='small' endIcon={<ClearIcon />} onClick={handleCloseModal}></Button>
+          <Button variant="text" size="medium" endIcon={<KeyboardArrowDownIcon fontSize='medium' />} onClick={handleCloseModal}></Button>
         </Box>
         <LocationPicker2 onPlaceChange={handleCenterChange} />
       </BottomSheet>
       <BottomSheet show={showTelModal} onClose={handleCloseTelModal}>
-        <button onClick={handleCloseTelModal}>关闭</button>
-        <Typography>Hello</Typography>
+        <Box sx={{display:"flex", flexDirection:"row", height:"24px"}}>
+          <Box sx={{flexGrow: 1}} />
+          <Button variant="text" size="medium" endIcon={<KeyboardArrowDownIcon fontSize='medium' />} onClick={handleCloseTelModal}></Button>
+        </Box>
+        <Box sx={{p:2, mb:4}}>
+          <Stack spacing={2}>
+            <Typography sx={{fontSize: '20px', fontWeight: 'regular', color: '#292929'}}>请留下手机号便于我们联络</Typography>
+            <TextField
+                //onFocus={}
+                inputRef={telInputRef}
+                onChange={(event) => {
+                  const inputValue = event.target.value.replace(/[^0-9]/g, ''); // 只保留数字
+                  setTelNum(inputValue ? Number(inputValue) : null); 
+                }}
+                id="input-area" placeholder='输入手机号' value={telNum === null ? '' : telNum} type="tel"
+                color={(String(telNum).length === 11) ? "success" : "info"}
+                label={(String(telNum).length === 11) ? "手机号" : "手机号（11位）"}
+                sx={{'& .MuiInputBase-input': {  //  更具体的 CSS 选择器
+                  fontSize: '18px'}
+                }}
+                slotProps={{
+                  input: {startAdornment: (
+                      <InputAdornment position="start">
+                        <PhoneAndroidIcon fontSize='small'/> <Typography fontSize={"18px"}>+86</Typography>
+                      </InputAdornment>
+                    ),
+                    endAdornment: ( telNum && (
+                      <InputAdornment position="end">
+                        <IconButton>
+                          <ClearIcon color='primary' sx={{fontSize:"24px"}}
+                            onClick={()=>{
+                              handleClearClick();
+                            }}/>
+                        </IconButton>
+                      </InputAdornment>
+                    )),},
+                  }}
+                variant="outlined"
+              />
+            <Button variant='contained' color='success' disabled={String(telNum).length !== 11}>完成报名</Button>
+          </Stack>
+        </Box>
       </BottomSheet>
       {
         place && area && (
@@ -278,10 +331,11 @@ export default function Index () {
               left: 0, 
               right: 0, 
               p: 3, // 添加 padding
+              boxShadow: '0px -2px 4px rgba(0, 0, 0, 0.15)', // 添加阴影
               zIndex: 10, // 添加 z-index
             }}
           >
-          <Button variant="contained" onClick={handleOpenTelModal}>报名清洁定制体验官</Button>
+          <Button variant="contained" onClick={handleOpenTelModal} sx={{mb:2}}>报名清洁定制体验官</Button>
         </Box>
         )
       }
