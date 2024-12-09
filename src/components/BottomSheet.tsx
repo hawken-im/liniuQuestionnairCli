@@ -8,20 +8,20 @@ const Backdrop = styled.div`
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 100;
+  z-index: 999;
 `;
 
 const ModalContent = styled.div`
-  z-index: 101;
+  z-index: 9999;
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   background-color: #fff;
-  padding: 20px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  z-index: 101;
+  padding-top: 0px;
+  padding-bottom: 20px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
   transform: translateY(${(props: { show: boolean }) => (props.show ? '0' : '100%')});
   transition: transform 0.3s ease-in-out;
 `;

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import AMapLoader from '@amap/amap-jsapi-loader';
-import { Checkbox, List, ListItem, ListItemButton, ListItemText, TextField } from '@mui/material';
+import { Box, Button, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemText, TextField, Typography } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
 
 interface Props {
   onPlaceChange: (name: string, address: string) => void;
@@ -16,6 +18,43 @@ function debounce(func: any, wait: number) {
 }
 
 export default function MapContainer({ onPlaceChange }: Props) {
+
+    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+    const [selectedIndex, setSelectedIndex] = useState(1);
+    const [showCancelButton, setShowCancelButton] = useState(false);
+    const [textFieldFocus, setTextFieldFocus] = useState(false);
+
+    const handleClearClick = () => {
+        const textField = document.getElementById('tip-input') as HTMLInputElement;
+        if (textField && textField.value !== ""){textField.value = ''; }
+    }
+  
+    const handleFocus = () => {
+      setShowCancelButton(true);
+      setTextFieldFocus(true);
+    };
+  
+    const handleBlur = () => {
+      setShowCancelButton(false);
+      setTextFieldFocus(false);
+    };
+  
+    const handleCancelClick = () => {
+      setShowCancelButton(false);
+      // 通过ref获取TextField的DOM元素并使其失去焦点
+      if (textFieldFocus) {
+        const textField = document.getElementById('tip-input');
+        if (textField){textField.blur(); }
+      }
+    };
+
+    const handleListItemClick = (
+      event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+      index: number,
+    ) => {
+      setSelectedIndex(index);
+    };
+
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const [nearbyPlaces, setNearbyPlaces] = useState<any[]>([]);
     //const centerRef = useRef<[number, number]>([103.874848, 30.617516]);
@@ -27,23 +66,8 @@ export default function MapContainer({ onPlaceChange }: Props) {
     let marker: any = null; 
   //let placeSearch: any = null; // 声明 placeSearch 变量
 
-  const [checked, setChecked] = useState([1]);
-
-  const handleToggle = (value: number) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setChecked(newChecked);
-  };
-
-
   useEffect(() => {
+    setWindowHeight(window.innerHeight);
     (window as any)._AMapSecurityConfig = {
       securityJsCode: "e9941671b66fd29b59a139e6e9964bb4",
     };
@@ -208,46 +232,65 @@ export default function MapContainer({ onPlaceChange }: Props) {
       <div
         ref={mapContainerRef}
         id="container"
-        style={{ height: "400px", width: '100%' }}
+        style={{ height: windowHeight*0.5, width: '100%' }}
       />
-      <TextField id="tip-input" label="请输入地址" variant="outlined" />
+      <Box sx={{display:"flex", flexDirection:"row", px:1, alignItems:"center"}}>
+        <TextField
+          id="tip-input" 
+          onFocus={handleFocus} onBlur={handleBlur} 
+          hiddenLabel placeholder="请输入地址" variant="standard" size='small' 
+          sx={{ width:"100%", px:1,
+            '& .MuiInputBase-input': {fontSize: '18px'},
+            }}
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton>
+                    <ClearIcon color='primary' sx={{fontSize:"18px"}}
+                      onClick={()=>{
+                        handleClearClick();
+                      }}/>
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+        {showCancelButton && (
+          <Button variant='text' size='small' 
+            sx={{fontSize: '18px'}}
+            onClick={handleCancelClick}>取消</Button>
+          )}
+      </Box>
       <List dense sx={{ width: '100%', position: 'relative', overflow: 'auto', maxHeight: '200px' }}>
       {nearbyPlaces.map((place) => {
-        const labelId = `checkbox-list-secondary-label-${place.id}`;
+        const labelId = `list-label-${place.id}`;
         return (
         <ListItem
          key={place.id}
-         secondaryAction={
-           <Checkbox
-             edge="end"
-             onChange={handleToggle(place.id)}
-             checked={checked.includes(place.id)}
-             inputProps={{ 'aria-labelledby': labelId }}
-           />
-         }
          disablePadding
-       >
-         <ListItemButton onClick={() => {
+         secondaryAction={ selectedIndex === place.id && (
+          <IconButton edge="end" aria-label="check">
+            <CheckIcon sx={{fontSize:'24px'}} color='primary'/>
+          </IconButton>
+         )}
+        >
+         <ListItemButton selected={selectedIndex === place.id}
+            onClick={(event) => {
+            handleListItemClick(event, place.id);
             handlePlaceClickRef.current?.(place.location.lng, place.location.lat);
             onPlaceChange(place.name,place.address);
           }}>
-           <ListItemText id={labelId} primary={`${place.name}`} />
-           <ListItemText id={labelId} primary={`${place.address}`} />
+            <Box sx={{display:"flex", flexDirection:"column", alignItems:"left"}}>
+              <ListItemText id={labelId} primary={`${place.name}`} />
+              <Typography variant="body2" sx={{fontSize:"14px", color:"#828282"}}>{`${place.address}`}</Typography>
+            </Box>
          </ListItemButton>
        </ListItem>
         )
       })}
       </List>
-      {/* <div id="nearbyPlaces">
-        {nearbyPlaces.map((place) => (
-          <div key={place.id}>
-            <h5>{place.name}</h5>
-            <p>{place.address}</p>
-          </div>
-        ))}
-      </div> */}
-      {/* <div id="panel">
-      </div> */}
     </div>
   );
 }
