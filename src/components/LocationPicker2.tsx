@@ -3,7 +3,8 @@ import AMapLoader from '@amap/amap-jsapi-loader';
 import { Box, Button, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemText, Stack, TextField, Typography } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
-import SearchIcon from '@mui/icons-material/Search';
+
+//TODO:搜索完成，点了某个地点，地址列表要回到顶部
 
 interface Props {
   onPlaceChange: (name: string, address: string) => void;
@@ -24,6 +25,7 @@ export default function MapContainer({ onPlaceChange }: Props) {
     const [selectedIndex, setSelectedIndex] = useState(1);
     //const [textFieldFocus, setTextFieldFocus] = useState(false);
     const [searchOn, setSearchOn] = useState(false);
+    const listRef = useRef<HTMLUListElement>(null);
 
     const handleClearClick = () => {
         const textField = document.getElementById('tip-input') as HTMLInputElement;
@@ -201,6 +203,12 @@ export default function MapContainer({ onPlaceChange }: Props) {
             //setCenter([newCenter.lng, newCenter.lat]);
             //onCenterChange([newCenter.lng, newCenter.lat]);
             searchNearby(newCenter.lng, newCenter.lat); 
+            if (listRef.current) {
+              listRef.current.scrollTo({
+                top: 0,
+                behavior: 'smooth' // Optional for smooth scrolling
+              });
+            }
           });
 
         } else {
@@ -270,33 +278,36 @@ export default function MapContainer({ onPlaceChange }: Props) {
           }}
         />
       </Box>
-      <List dense sx={{ width: '100%', position: 'relative', overflow: 'auto', maxHeight:(searchOn ? '320px' : '200px') }}>
-      {nearbyPlaces.map((place) => {
-        const labelId = `list-label-${place.id}`;
-        return (
-        <ListItem
-         key={place.id}
-         disablePadding
-         secondaryAction={ selectedIndex === place.id && (
-          <IconButton edge="end" aria-label="check">
-            <CheckIcon sx={{fontSize:'24px'}} color='primary'/>
-          </IconButton>
-         )}
-        >
-         <ListItemButton selected={selectedIndex === place.id}
-            onClick={(event) => {
-            handleListItemClick(event, place.id);
-            handlePlaceClickRef.current?.(place.location.lng, place.location.lat);
-            onPlaceChange(place.name,place.address);
-          }}>
-            <Box sx={{display:"flex", flexDirection:"column", alignItems:"left"}}>
-              <ListItemText id={labelId} primary={`${place.name}`} />
-              <Typography variant="body2" sx={{fontSize:"14px", color:"#828282"}}>{`${place.address}`}</Typography>
-            </Box>
-         </ListItemButton>
-       </ListItem>
-        )
-      })}
+      <List 
+        dense 
+        ref={listRef}
+        sx={{ width: '100%', position: 'relative', overflow: 'auto', maxHeight:(searchOn ? '320px' : '200px') }}>
+        {nearbyPlaces.map((place) => {
+          const labelId = `list-label-${place.id}`;
+          return (
+          <ListItem
+          key={place.id}
+          disablePadding
+          secondaryAction={ selectedIndex === place.id && (
+            <IconButton edge="end" aria-label="check">
+              <CheckIcon sx={{fontSize:'24px'}} color='primary'/>
+            </IconButton>
+          )}
+          >
+          <ListItemButton selected={selectedIndex === place.id}
+              onClick={(event) => {
+              handleListItemClick(event, place.id);
+              handlePlaceClickRef.current?.(place.location.lng, place.location.lat);
+              onPlaceChange(place.name,place.address);
+            }}>
+              <Box sx={{display:"flex", flexDirection:"column", alignItems:"left"}}>
+                <ListItemText id={labelId} primary={`${place.name}`} />
+                <Typography variant="body2" sx={{fontSize:"14px", color:"#828282"}}>{`${place.address}`}</Typography>
+              </Box>
+          </ListItemButton>
+        </ListItem>
+          )
+        })}
       </List>
     </div>
   );
