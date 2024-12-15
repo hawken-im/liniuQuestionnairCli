@@ -1,4 +1,4 @@
-import { Box, Button, ButtonProps } from '@mui/material';
+import { Box, Button, ButtonProps, Typography } from '@mui/material';
 import { themeConsts } from './ThemeWrapper';
 import img0 from '@/resources/houseStyle/0.png';
 import img1 from '@/resources/houseStyle/1.png';
@@ -24,13 +24,14 @@ export const CheckButtonWithPic = ({
           flexDirection: 'column', 
           alignItems: 'center',
           justifyContent: 'flex-end',
-          pb: {xs:0, md:2},
+          pb: {xs:0, md:1},
           borderRadius: 4, 
-          borderWidth: checked ? "3px" : "1px", 
-          borderColor: checked ? "primary.main" : "#828282",
-          color: "#fff",
-          fontSize: '18px',
-          fontWeight: 'bold',
+          borderWidth: '1px', 
+          boxShadow: checked ? `0 0 0 1px ${themeConsts.primaryBlack}` : "none",
+          borderColor: checked ? themeConsts.primaryBlack : themeConsts.borderGrey,
+          color: themeConsts.textBlack,
+          fontSize: '16px',
+          fontWeight: 'medium',
           width: {xs:'133px', md:'266px'},
           height: {xs:'95px', md:'190px'},
           backgroundImage: `url(${bgList[bg]})`,
@@ -39,15 +40,21 @@ export const CheckButtonWithPic = ({
         }}
         {...rest} // 将所有其他 props 传递给 Button 组件
       >
-        {children}
         {/* {checked && <BeenhereIcon sx={{color: 'primary.main', fontSize: '24px', position:"absolute", top:-2, right:3}} />} */}
       </Button>
       <Box sx={{
         position:"absolute", 
-        bottom:0, left:0, 
-        width:'100%', height:'30%', 
+        bottom:'1px', left:'0.5%', 
+        width:'99%', height:'30%', 
+        borderBottomLeftRadius: 16, borderBottomRightRadius: 16,
         backgroundColor:themeConsts.bgGrey,
-        opacity: 0.5}}>
+        opacity: 0.7}}>
+        <Typography sx={{
+          color: themeConsts.textBlack, 
+          fontSize: '16px', 
+          fontWeight: 'medium',
+          textAlign: 'center', p:0}}>{children}
+        </Typography>
       </Box>
     </Box>
   );
@@ -95,6 +102,27 @@ export const TextButton = ({
         color: themeConsts.textBlack,
         fontSize: '16px',
         fontWeight: 'medium',
+      }}
+      {...rest} // 将所有其他 props 传递给 Button 组件
+    >
+      {children}
+    </Button>
+  );
+};
+
+export const SmallTextButton = ({ 
+  children, 
+  checked, 
+  ...rest  //  使用 ...rest 捕获所有其他 props
+}: { children: React.ReactNode; checked: boolean } & ButtonProps) => { // 使用 ButtonProps 类型
+  return (
+    <Button 
+      variant="text" 
+      sx={{
+        p: 0,
+        color: checked? themeConsts.textBlack: themeConsts.textGrey,
+        fontSize: checked? '15px': '15px',
+        fontWeight: checked? 'medium' : 'regular',
       }}
       {...rest} // 将所有其他 props 传递给 Button 组件
     >

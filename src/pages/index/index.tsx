@@ -2,20 +2,22 @@ import { useEffect, useRef, useState } from 'react';
 import { useLoad } from '@tarojs/taro'
 import Container from '@mui/material/Container';
 import AppBar from '@mui/material/AppBar';
-import { Box, Button, CssBaseline, Divider, IconButton, InputAdornment, Stack, TextField, Toolbar, Typography } from '@mui/material';
+import { Box, Button, CssBaseline, Divider, InputAdornment, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import HeaderBar from '../../components/HeaderBar';
 import CheckButton, { SmallIconButton, TextButton, CheckButtonWithPic } from '@/components/CustomButton';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ClearIcon from '@mui/icons-material/Clear';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocationPicker2 from '@/components/LocationPicker2';
 import BottomSheet from '@/components/BottomSheet';
 import QuestionCard from '@/components/QuestionCard';
 import Grid2 from '@mui/material/Grid2';
 import { themeCustomized as theme, themeConsts } from '@/components/ThemeWrapper';
+import Footer from '@/components/Footer';
+import Taro from '@tarojs/taro';
+
+import { postData } from '@/utils/apiServices';
 
 const NumOfQuestions = 6;//这个问卷有多少个问题
 //const HouseModelChoices = ["跃层", "一楼或顶楼带花园", "别墅"];
@@ -26,11 +28,30 @@ const HallFloorChoices = ["大理石", "瓷砖", "地毯", "实木地板", "复�
 const HouseSystemChoices = ["新风", "全屋软水"];
 //注意最后在提交的时候对应选项提交完整的string
 
+/*
+{
+"user":{
+name: 大伯四
+tel: 13000000000
+gender: 0/1
+}
+  "place": {
+    "name": "小区名称",
+    "address": "小区地址"
+  },
+  "area": "产权面积",
+  "remodelingYear": "装修年限",
+  "houseStyle": "装修风格",
+  "hallFloor": "客厅地面",
+  "houseSystem": "全屋系统"
+}
+*/
+
 export default function Index () {
   const [showModal, setShowModal] = useState(false);
-  const [showTelModal, setShowTelModal] = useState(false);
 
   const [place, setPlace] = useState("选择小区");//1
+  const [address, setAddress] = useState("");//1
   const [area, setArea] = useState<number | null>(null);//2
   // const [addArea, setAddArea] = useState<number | null>(null);//2
   const [remodelingYear, setRemodelingYear] = useState<number | null>(null);//3
@@ -39,22 +60,47 @@ export default function Index () {
   const [hallFloor, setHallFloor] = useState<Set<number>>(new Set());//5
   const [houseSystem, setHouseSystem] = useState<Set<number>>(new Set());//6
 
-  const [userName, setUserName] = useState("");
-  const [userGender, setUserGender] = useState("");
   const [telNum, setTelNum] = useState<number | null>(null);
-  const telInputRef = useRef<HTMLInputElement>(null); 
+  const [name, setName] = useState<string>('');
+  const [gender, setGender] = useState<number>(0);
 
   const [answered, setAnswered] = useState("");
 
-  const handleClearClick = () => {
-    setTelNum(null);
-    if (telInputRef.current) {
-      telInputRef.current.focus(); 
-    }
+  const data = {
+    userName: name,
+    userTel: telNum,
+    userGender: gender,
+    placeName: place,
+    placeAddress: address,
+    area: area,
+    remodelingYear: remodelingYear,
+    houseStyle: houseStyle,
+    hallFloor: hallFloor,
+    houseSystem: houseSystem,
+  };
+
+  const handleSubmit = (telNum:number, name:string, gender:number) => {
+    console.log("submit");
+    console.log("place:", place);
+    console.log("area:", area);
+    console.log("remodelingYear:", remodelingYear);
+    console.log("houseStyle:", houseStyle);
+    console.log("hallFloor:", hallFloor);
+    console.log("houseSystem:", houseSystem);
+    setTelNum(telNum);
+    setName(name);
+    setGender(gender);
+    postData(data);
+    //jump to success page
+    Taro.redirectTo({
+      url: '/pages/success/index'
+    });
   }
+
 
   const handleCenterChange = (name:string, address:string) => {
     setPlace(`${name}`);
+    setAddress(`${address}`);
   };
   
   const handleRemodelingYearCheck = (index: number) => {
@@ -98,8 +144,6 @@ export default function Index () {
 
   const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
-  const handleOpenTelModal = () => setShowTelModal(true);
-  const handleCloseTelModal = () => setShowTelModal(false);
 
   useEffect(()=>{
 
@@ -130,7 +174,7 @@ export default function Index () {
         sx={{bgcolor: '#fff', mx: 0, px: 0 , width: '100%', zIndex:999}}>
           {showModal && (
             <Toolbar onClick={handleCloseModal} sx={{alignItems:"center"}}>
-              <Button variant="text" startIcon={<ArrowBackIcon />} onClick={handleCloseModal}></Button>
+              <Button variant="text" startIcon={<ArrowBackIcon />} onClick={handleCloseModal} />
               <Box sx={{ flexGrow: 1 }} />
               <Typography variant="h6" sx={{fontSize: '20px', fontWeight: 'regular', color: themeConsts.textBlack,ml:-4}}>选择小区</Typography>
               <Box sx={{ flexGrow: 1 }} />
@@ -138,7 +182,7 @@ export default function Index () {
             )}
           {!showModal && <HeaderBar progress={((answered.match(/A/g) || []).length)/NumOfQuestions*100} />}
       </AppBar>
-      <Box sx={{px: 4, py: 2, bgcolor: themeConsts.bgGrey, mb:{xs: 14, md: 24}}}>
+      <Box sx={{px: 4, py: 2, bgcolor: themeConsts.bgGrey, mb:{xs: 8, md: 12}}}>
         <Typography sx={{fontSize: '30px', fontWeight: 'medium', color: themeConsts.textBlack, my: 2}}>开启体验</Typography>
         <Typography sx={{fontSize: '18px', fontWeight: 'medium', color: themeConsts.textBlack, mt: 2}}>{`定制问卷 (Part 1)`}</Typography>
         <Stack direction="row" spacing={0.5} sx={{mt: 1, alignItems:'center'}}>
@@ -293,23 +337,8 @@ export default function Index () {
           </Stack>
         </QuestionCard>
       </Box>
-      { (!place || !area) && (
-        <Box 
-          sx={{ 
-            bgcolor: 'background.paper', 
-            display: 'flex', 
-            flexDirection: 'column',
-            justifyContent: 'center', 
-            alignItems: 'center',
-            p: 3, // 添加 padding
-            mt: -8,
-            mb: 4,
-          }}
-        >
-          <Button disabled variant="contained" onClick={handleOpenTelModal}>提交报名</Button>
-          <Typography sx={{fontSize:"16px", color:"#828282", my:1}}>请先完善报名信息</Typography>
-        </Box>
-      )}
+
+      <Footer available={true} onSubmit={(telNum: number, name: string, gender: number) => { handleSubmit(telNum, name, gender) }} />
 
       <BottomSheet show={showModal} onClose={handleCloseModal}>
         { place !== "选择小区" && (
@@ -325,70 +354,6 @@ export default function Index () {
         </Box>
         <LocationPicker2 onPlaceChange={handleCenterChange} />
       </BottomSheet>
-      <BottomSheet show={showTelModal} onClose={handleCloseTelModal}>
-        <Box sx={{display:"flex", flexDirection:"row", height:"24px"}}>
-          <Box sx={{flexGrow: 1}} />
-          <Button variant="text" size="medium" endIcon={<KeyboardArrowDownIcon fontSize='medium' />} onClick={handleCloseTelModal}></Button>
-        </Box>
-        <Box sx={{p:2, mb:4}}>
-          <Stack spacing={2}>
-            <Typography sx={{fontSize: '20px', fontWeight: 'regular', color: themeConsts.textBlack}}>请留下手机号便于我们联络</Typography>
-            <TextField
-                //onFocus={}
-                inputRef={telInputRef}
-                onChange={(event) => {
-                  const inputValue = event.target.value.replace(/[^0-9]/g, ''); // 只保留数字
-                  setTelNum(inputValue ? Number(inputValue) : null); 
-                }}
-                id="input-area" placeholder='输入手机号' value={telNum === null ? '' : telNum} type="tel"
-                color={(String(telNum).length === 11) ? "success" : "info"}
-                label={(String(telNum).length === 11) ? "手机号" : "手机号（11位）"}
-                sx={{'& .MuiInputBase-input': {  //  更具体的 CSS 选择器
-                  fontSize: '18px'}
-                }}
-                slotProps={{
-                  input: {startAdornment: (
-                      <InputAdornment position="start">
-                        <PhoneAndroidIcon fontSize='small'/> <Typography fontSize={"18px"}>+86</Typography>
-                      </InputAdornment>
-                    ),
-                    endAdornment: ( telNum && (
-                      <InputAdornment position="end">
-                        <IconButton>
-                          <ClearIcon color='primary' sx={{fontSize:"24px"}}
-                            onClick={()=>{
-                              handleClearClick();
-                            }}/>
-                        </IconButton>
-                      </InputAdornment>
-                    )),},
-                  }}
-                variant="outlined"
-              />
-            <Button variant='contained' color='success' disabled={String(telNum).length !== 11}>完成报名</Button>
-          </Stack>
-        </Box>
-      </BottomSheet>
-      {
-        place && area && (
-          <Box 
-            sx={{ 
-              bgcolor: 'background.paper', 
-              display: 'flex', 
-              justifyContent: 'center', 
-              position: 'fixed', 
-              bottom: 0, 
-              left: 0, 
-              right: 0, 
-              p: 3, // 添加 padding
-              boxShadow: '0px -2px 4px rgba(0, 0, 0, 0.15)', // 添加阴影
-              zIndex: 10, // 添加 z-index
-            }}
-          >
-          <Button variant="contained" onClick={handleOpenTelModal} sx={{mb:2}}>提交报名</Button>
-        </Box>
-        )
-      }
     </Container>
   )
 }

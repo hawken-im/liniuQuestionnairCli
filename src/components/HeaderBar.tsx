@@ -3,26 +3,26 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+//import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { themeConsts } from './ThemeWrapper';
-import { styled } from '@mui/material';
-import { blue } from '@mui/material/colors';
+// import { styled } from '@mui/material';
+// import { blue } from '@mui/material/colors';
 
-const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  height: 2,
-  [`&.${linearProgressClasses.colorPrimary}`]: {
-    backgroundColor: theme.palette.grey[200],
-    ...theme.applyStyles('dark', {
-      backgroundColor: theme.palette.grey[200],
-    }),
-  },
-  [`& .${linearProgressClasses.bar}`]: {
-    backgroundColor: blue[500],
-    ...theme.applyStyles('dark', {
-      backgroundColor: blue[500],
-    }),
-  },
-}));
+// const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+//   height: 2,
+//   [`&.${linearProgressClasses.colorPrimary}`]: {
+//     backgroundColor: theme.palette.grey[200],
+//     ...theme.applyStyles('dark', {
+//       backgroundColor: theme.palette.grey[200],
+//     }),
+//   },
+//   [`& .${linearProgressClasses.bar}`]: {
+//     backgroundColor: blue[500],
+//     ...theme.applyStyles('dark', {
+//       backgroundColor: blue[500],
+//     }),
+//   },
+// }));
 
 function HeaderBar({progress}: {progress: number}) {
 
@@ -50,7 +50,7 @@ function HeaderBar({progress}: {progress: number}) {
             </Typography>
           </Box>
         </Toolbar>
-        <BorderLinearProgress variant="determinate" value={progress} />
+        {/* <BorderLinearProgress variant="determinate" value={progress} /> */}
       </Container>
   );
 }
