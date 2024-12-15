@@ -3,6 +3,7 @@ import AMapLoader from '@amap/amap-jsapi-loader';
 import { Box, Button, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemText, Stack, TextField, Typography } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
+import { themeConsts } from './ThemeWrapper';
 
 //TODO:搜索完成，点了某个地点，地址列表要回到顶部
 
@@ -25,6 +26,7 @@ export default function MapContainer({ onPlaceChange }: Props) {
     const [selectedIndex, setSelectedIndex] = useState(1);
     //const [textFieldFocus, setTextFieldFocus] = useState(false);
     const [searchOn, setSearchOn] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
     const listRef = useRef<HTMLUListElement>(null);
 
     const handleClearClick = () => {
@@ -119,9 +121,11 @@ export default function MapContainer({ onPlaceChange }: Props) {
           const input = document.getElementById("tip-input") as HTMLInputElement;
           input.addEventListener('input', debounce(() => {
             const keywords = input.value;
+            setIsSearching(true);
             placeSearchRef.current.search(keywords, function (status: any, result: any) {
               if (status === 'complete' && result.info === 'OK') {
                 setNearbyPlaces(result.poiList.pois);
+                setIsSearching(false);
               } else {
                 console.error('地点搜索失败', result);
               }
@@ -137,7 +141,7 @@ export default function MapContainer({ onPlaceChange }: Props) {
             pageSize: 20,
             pageIndex: 1,
             citylimit: false, 
-            map: map,
+            map: null,
             autoFitView: false
             });
           };
@@ -151,6 +155,7 @@ export default function MapContainer({ onPlaceChange }: Props) {
               nearbySearchRef.current.searchNearBy('', [lng, lat], 500, function (status, result) {
                 if (status === 'complete' && result.info === 'OK') {
                   setNearbyPlaces(result.poiList.pois);
+                  setIsSearching(false);
                   console.log("nearbyPlaces:", result.poiList.pois);
                 } else {
                   console.error('附近地点搜索失败', result);
@@ -198,6 +203,7 @@ export default function MapContainer({ onPlaceChange }: Props) {
 
           map.on('moveend', () => {
             setSearchOn(false);
+            setIsSearching(true);
             const newCenter = map.getCenter();
             marker.setPosition(newCenter);
             //setCenter([newCenter.lng, newCenter.lat]);
@@ -231,7 +237,7 @@ export default function MapContainer({ onPlaceChange }: Props) {
       <div
         ref={mapContainerRef}
         id="container"
-        style={{ height: (searchOn ? windowHeight*0.25 : windowHeight*0.5), width: '100%' }}
+        style={{ height: (searchOn ? windowHeight*0.25 : windowHeight*0.45), width: '100%' }}
       />
       <Box sx={{display:"flex", flexDirection:"row", px:1, alignItems:"center"}}>
         <TextField
@@ -240,14 +246,20 @@ export default function MapContainer({ onPlaceChange }: Props) {
           hiddenLabel placeholder="请输入地址" variant="standard" size='small' 
           sx={{ width:"100%", px:1,
             '& .MuiInputBase-input': {fontSize: '18px'},
+            '& fieldset': {
+                borderColor: themeConsts.borderGrey,
+              },
+              '& .Mui-focused fieldset': { 
+                borderColor: themeConsts.primaryBlack 
+              },
             }}
           slotProps={{
             input: {
               endAdornment: (
                 <InputAdornment position="end">
                   { searchOn ?
-                   <Button type="submit" variant='text' size='small' 
-                      sx={{fontSize: '18px'}}
+                   <Button type="submit" variant='text' size='small' color='primary'
+                      sx={{fontSize: '18px', py: 0}}
                       onClick={
                         (event) => {
                           event.preventDefault();
@@ -266,7 +278,7 @@ export default function MapContainer({ onPlaceChange }: Props) {
                         搜索
                     </Button> :
                     <IconButton>
-                      <ClearIcon color='primary' sx={{fontSize:"18px"}}
+                      <ClearIcon sx={{ color: themeConsts.primaryBlack, fontSize: "18px" }}
                         onClick={()=>{
                           handleClearClick();
                         }}/>
@@ -281,33 +293,38 @@ export default function MapContainer({ onPlaceChange }: Props) {
       <List 
         dense 
         ref={listRef}
-        sx={{ width: '100%', position: 'relative', overflow: 'auto', maxHeight:(searchOn ? '320px' : '200px') }}>
-        {nearbyPlaces.map((place) => {
-          const labelId = `list-label-${place.id}`;
-          return (
-          <ListItem
-          key={place.id}
-          disablePadding
-          secondaryAction={ selectedIndex === place.id && (
-            <IconButton edge="end" aria-label="check">
-              <CheckIcon sx={{fontSize:'24px'}} color='primary'/>
-            </IconButton>
-          )}
-          >
-          <ListItemButton selected={selectedIndex === place.id}
-              onClick={(event) => {
-              handleListItemClick(event, place.id);
-              handlePlaceClickRef.current?.(place.location.lng, place.location.lat);
-              onPlaceChange(place.name,place.address);
-            }}>
-              <Box sx={{display:"flex", flexDirection:"column", alignItems:"left"}}>
-                <ListItemText id={labelId} primary={`${place.name}`} />
-                <Typography variant="body2" sx={{fontSize:"14px", color:"#828282"}}>{`${place.address}`}</Typography>
-              </Box>
-          </ListItemButton>
-        </ListItem>
-          )
-        })}
+        sx={{ width: '100%', position: 'relative', overflow: 'auto', height:(searchOn ? '320px' : '200px'), maxHeight:(searchOn ? '320px' : '200px') }}>
+          {isSearching ? <Typography sx={{fontSize:"18px", color:themeConsts.textGrey}}>搜索中...</Typography> :
+          
+            nearbyPlaces.map((place) => {
+              const labelId = `list-label-${place.id}`;
+              return (
+              <ListItem
+              key={place.id}
+              disablePadding
+              secondaryAction={ selectedIndex === place.id && (
+                <IconButton edge="end" aria-label="check">
+                  <CheckIcon sx={{color:themeConsts.primaryBlack, fontSize:'24px'}}/>
+                </IconButton>
+              )}
+              >
+              <ListItemButton selected={selectedIndex === place.id}
+                  onClick={(event) => {
+                  handleListItemClick(event, place.id);
+                  handlePlaceClickRef.current?.(place.location.lng, place.location.lat);
+                  onPlaceChange(place.name,place.address);
+                }}>
+                  <Box sx={{display:"flex", flexDirection:"column", alignItems:"left"}}>
+                    <ListItemText id={labelId} primary={`${place.name}`} />
+                    <Typography variant="body2" sx={{fontSize:"14px", color:"#828282"}}>{`${place.address}`}</Typography>
+                  </Box>
+              </ListItemButton>
+            </ListItem>
+              )
+            })
+          
+          }
+        
       </List>
     </div>
   );
