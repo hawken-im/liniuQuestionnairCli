@@ -58,6 +58,7 @@
     "@tarojs/runtime": "4.0.7",
     "@tarojs/shared": "4.0.7",
     "@tarojs/taro": "4.0.7",
+    "js-md5": "^0.8.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^7.0.2"
@@ -67,7 +68,7 @@
     "@babel/plugin-proposal-class-properties": "7.14.5",
     "@babel/preset-react": "^7.24.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.5",
-    "@tarojs/cli": "4.0.7",
+    "@tarojs/cli": "^4.0.8",
     "@tarojs/taro-loader": "4.0.7",
     "@tarojs/webpack5-runner": "4.0.7",
     "@types/node": "^18",

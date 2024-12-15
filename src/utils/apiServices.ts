@@ -1,13 +1,27 @@
 // apiService.ts
+import { md5 } from 'js-md5'
+
+const dataSalt = 'shepipi';
 
 export const postData = async (data: any) => {
+    // Add a salt to the data
+    const saltedData = { ...data, salt: dataSalt };
+    //sort the data
+    const sortedData = Object.keys(saltedData).sort().reduce((acc: { [key: string]: any }, key) => {
+      acc[key] = data[key];
+      return acc;
+    }, {});
+    // md5 hash the data
+    // TODO:注意按照utf8编码的顺序对data进行md5加密
+    const hash = md5(JSON.stringify(sortedData));
+
     try {
-      const response = await fetch('localhost:8080/liliu/invest/info/save', {
+      const response = await fetch('http://192.168.0.112:8080/liliu/invest/info/save', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: hash,
       });
   
       if (!response.ok) {

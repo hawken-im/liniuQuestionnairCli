@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLoad } from '@tarojs/taro'
 import Container from '@mui/material/Container';
 import AppBar from '@mui/material/AppBar';
-import { Box, Button, CssBaseline, Divider, InputAdornment, Stack, TextField, Toolbar, Typography } from '@mui/material';
+import { Box, Button, CssBaseline, Divider, InputAdornment, sliderClasses, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import HeaderBar from '../../components/HeaderBar';
 import CheckButton, { SmallIconButton, TextButton, CheckButtonWithPic } from '@/components/CustomButton';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -28,24 +28,6 @@ const HallFloorChoices = ["大理石", "瓷砖", "地毯", "实木地板", "复�
 const HouseSystemChoices = ["新风", "全屋软水"];
 //注意最后在提交的时候对应选项提交完整的string
 
-/*
-{
-"user":{
-name: 大伯四
-tel: 13000000000
-gender: 0/1
-}
-  "place": {
-    "name": "小区名称",
-    "address": "小区地址"
-  },
-  "area": "产权面积",
-  "remodelingYear": "装修年限",
-  "houseStyle": "装修风格",
-  "hallFloor": "客厅地面",
-  "houseSystem": "全屋系统"
-}
-*/
 
 export default function Index () {
   const [showModal, setShowModal] = useState(false);
@@ -63,23 +45,26 @@ export default function Index () {
   const [telNum, setTelNum] = useState<number | null>(null);
   const [name, setName] = useState<string>('');
   const [gender, setGender] = useState<number>(0);
-
-  const [answered, setAnswered] = useState("");
+  const [answered, setAnswered] = useState<number>(0);
 
   const data = {
-    userName: name,
-    userTel: telNum,
-    userGender: gender,
-    placeName: place,
-    placeAddress: address,
-    area: area,
-    remodelingYear: remodelingYear,
-    houseStyle: houseStyle,
-    hallFloor: hallFloor,
-    houseSystem: houseSystem,
+    userName: name,//用户姓名 string
+    userTel: telNum,//用户电话 number
+    userGender: gender,//用户性别 number
+    placeName: place,//小区名称 string
+    placeAddress: address,//小区地址 string
+    area: area,//面积 number
+    remodelingYear: remodelingYear,//装修年限 index number
+    houseStyle: houseStyle,//风格 index number
+    hallFloor: hallFloor,//地面铺装 index number
+    houseSystem: houseSystem,//全屋系统 index number
   };
 
-  const handleSubmit = (telNum:number, name:string, gender:number) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFailed, setIsFailed] = useState(false); //如果失败就重试，或返回
+
+  const handleSubmit = async (telNum:number, name:string, gender:number) => {
+    setIsSubmitting(true);
     console.log("submit");
     console.log("place:", place);
     console.log("area:", area);
@@ -90,11 +75,21 @@ export default function Index () {
     setTelNum(telNum);
     setName(name);
     setGender(gender);
-    postData(data);
+    //postData(data);
     //jump to success page
-    Taro.redirectTo({
-      url: '/pages/success/index'
-    });
+    //wait for 3 seconds for test
+    setTimeout(() => {
+      //setIsSubmitting(false);
+      setTimeout(() => {
+        setIsFailed(true);//如果用户点击取消，则跳转到失败页面
+      }, 3000);
+      // Taro.navigateTo({
+      //   url: '/pages/success/index'
+      // });
+    }, 3000);
+    // Taro.redirectTo({
+    //   url: '/pages/success/index'
+    // });
   }
 
 
@@ -145,22 +140,25 @@ export default function Index () {
   const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
 
-  useEffect(()=>{
+  useEffect(() => {
+    // 计算已回答的问题数量
+    let count = 0;
+    if (place !== "选择小区") count++;
+    if (area !== null) count++;
+    if (remodelingYear !== null) count++;
+    if (houseStyle !== null) count++;
+    if (hallFloor.size > 0) count++;
+    if (houseSystem.size > 0) count++;
+    setAnswered(count);
+  }), [place, area, remodelingYear, houseStyle, hallFloor, houseSystem];
 
-    function progressCheck() {
-      let answered ="";
-      if (place !== "选择小区"){answered+='A';};
-      if (area !== null){answered+='A';}
-        else{answered+='N';};
-      if (remodelingYear !== null){answered+='A';} 
-      if (houseStyle !== null){answered+='A';}
-      if (hallFloor.size>0){answered+='A';}
-      if (houseSystem.size>0){answered+='A';}
-      setAnswered(answered);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    // 当 answered 等于 NumOfQuestions 时，滚动到页面底部
+    if (answered === NumOfQuestions && bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-    progressCheck();
-  
-  },[place,area,remodelingYear,houseStyle,hallFloor,houseSystem]);
+  }, [answered]);
 
   useLoad(() => {
     console.log('Page loaded.');
@@ -180,9 +178,9 @@ export default function Index () {
               <Box sx={{ flexGrow: 1 }} />
             </Toolbar>
             )}
-          {!showModal && <HeaderBar progress={((answered.match(/A/g) || []).length)/NumOfQuestions*100} />}
+          {!showModal && <HeaderBar progress={answered/NumOfQuestions*100} />}
       </AppBar>
-      <Box sx={{px: 4, py: 2, bgcolor: themeConsts.bgGrey, mb:{xs: 8, md: 12}}}>
+      <Box sx={{px: 4, py: 2, bgcolor: themeConsts.bgGrey, mb:{xs: 4, md: 8}}}>
         <Typography sx={{fontSize: '30px', fontWeight: 'medium', color: themeConsts.textBlack, my: 2}}>开启体验</Typography>
         <Typography sx={{fontSize: '18px', fontWeight: 'medium', color: themeConsts.textBlack, mt: 2}}>{`定制问卷 (Part 1)`}</Typography>
         <Stack direction="row" spacing={0.5} sx={{mt: 1, alignItems:'center'}}>
@@ -215,7 +213,7 @@ export default function Index () {
               //onFocus={}
               onChange={(event) => {
                 const inputValue = event.target.value.replace(/[^0-9]/g, ''); // 只保留数字
-                setArea(inputValue ? Number(inputValue) : null); 
+                setArea( inputValue ? Number(inputValue) : null);
               }}
               id="input-area" placeholder='输入整数' value={area === null ? '' : area} size="small" type="tel"
               sx={{
@@ -283,7 +281,9 @@ export default function Index () {
           {
             hallFloor.size > 1 && (
               <Box sx={{position:"absolute", top:"10px", right:"10px"}}>
-                <SmallIconButton onClick={() => setHallFloor(new Set())}>
+                <SmallIconButton onClick={() => {
+                  setHallFloor(new Set());
+                  }}>
                     <Typography sx={{fontSize: '18px', fontWeight: 'regular', color: themeConsts.textBlack}}>{`× `}</Typography>
                     清除选择
                 </SmallIconButton>
@@ -338,7 +338,10 @@ export default function Index () {
         </QuestionCard>
       </Box>
 
-      <Footer available={true} onSubmit={(telNum: number, name: string, gender: number) => { handleSubmit(telNum, name, gender) }} />
+      {/* 在 Footer 组件下方添加一个空的 div，并设置 ref 属性 */}
+      <div ref={bottomRef}></div> 
+
+      <Footer available={answered >= NumOfQuestions} onSubmit={(telNum: number, name: string, gender: number) => { handleSubmit(telNum, name, gender) }} />
 
       <BottomSheet show={showModal} onClose={handleCloseModal}>
         { place !== "选择小区" && (
@@ -354,6 +357,65 @@ export default function Index () {
         </Box>
         <LocationPicker2 onPlaceChange={handleCenterChange} />
       </BottomSheet>
+      <Box sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        bgcolor: 'rgba(0,0,0,0.5)',
+        display: isSubmitting ? 'flex' : 'none',
+        zIndex: 9999,
+      }}>
+        {
+          !isFailed && (
+            <Box sx={{
+              margin: 'auto',
+              padding: '24px',
+              bgcolor: '#fff',
+              borderRadius: '8px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}>
+              <Stack direction={'column'} spacing={2} sx={{alignItems: 'center'}}>
+                <Box sx={{mb: 4}}>
+                  <img src={require('@/resources/loading.gif')} alt='loading' />
+                </Box>
+                <Typography variant='h6' sx={{fontSize: '24px', fontWeight: 'medium', color: themeConsts.textBlack, mb: 2}}>提交中...</Typography>
+                <Typography variant='body1' sx={{fontSize: '18px', fontWeight: 'regular', color: themeConsts.textBlack}}>请稍后，正在提交您的数据</Typography>
+              </Stack>
+            </Box>
+          )
+        }
+        {
+          isFailed && (
+              <Box sx={{
+                  margin: 'auto',
+                  padding: '24px',
+                  bgcolor: '#fff',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}>
+                    <Stack direction={'column'} spacing={2} sx={{alignItems: 'center'}}>
+                      <Typography variant='body1' sx={{fontSize: '18px', fontWeight: 'regular', color: themeConsts.textBlack, mb: 2}}>提交失败，请重试</Typography>
+                      <Button variant="contained" sx={{color:themeConsts.bgWhite, backgroundColor:themeConsts.primaryBlack}} onClick={() => {
+                        setIsFailed(false);
+                        handleSubmit(telNum ?? 0, name, gender);
+                      }
+                      }>重试</Button>
+                      <Button variant="text" sx={{color:themeConsts.textBlack}} onClick={() => {
+                        setIsFailed(false);
+                        setIsSubmitting(false);
+                      }}>取消</Button>
+                    </Stack>
+               </Box>
+          )
+        }
+        
+      </Box>
     </Container>
   )
 }
