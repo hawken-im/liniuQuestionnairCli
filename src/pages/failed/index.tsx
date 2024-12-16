@@ -31,13 +31,12 @@ export default function Index () {
                   Taro.navigateTo({url: '/pages/index/index'})
                 }}><ArrowBackIcon /></IconButton>
               <Box sx={{ flexGrow: 1 }} />
-              <Typography variant="h6" sx={{fontSize: '20px', fontWeight: 'regular', color: themeConsts.textBlack,ml:-4}}>问卷提交成功</Typography>
+              <Typography variant="h6" sx={{fontSize: '20px', fontWeight: 'regular', color: themeConsts.textBlack,ml:-4}}>问卷提交失败</Typography>
               <Box sx={{ flexGrow: 1 }} />
             </Toolbar>
       </AppBar>
       <Box sx={{px: 4, py: 2, mb:1, bgcolor: themeConsts.bgGrey, alignItems: 'center'}}>
-        <Typography sx={{fontSize: '18px', fontWeight: 'regular', color: themeConsts.textBlack, textAlign:'center'}}>清洁顾问将在 2 小时内来电</Typography>
-        <Typography sx={{fontSize: '18px', fontWeight: 'regular', color: themeConsts.textBlack, textAlign:'center'}}>请注意接听</Typography>
+        <Typography sx={{fontSize: '18px', fontWeight: 'regular', color: themeConsts.textBlack, textAlign:'center'}}>系统维护中...</Typography>
       </Box>
       <Divider />
       <Box sx={{px: 4, py: 2, bgcolor: themeConsts.bgGrey, mb:{xs: 14, md: 24}}}>
