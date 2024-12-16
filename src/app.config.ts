@@ -2,6 +2,7 @@ export default defineAppConfig({
   pages: [
     'pages/index/index',
     'pages/success/index',
+    'pages/failed/index',
   ],
   window: {
     backgroundTextStyle: 'light',

@@ -82,11 +82,11 @@ export default function Index () {
       //setIsSubmitting(false);
       setTimeout(() => {
         setIsFailed(true);//如果用户点击取消，则跳转到失败页面
-      }, 3000);
+      }, 1000);
       // Taro.navigateTo({
       //   url: '/pages/success/index'
       // });
-    }, 3000);
+    }, 1000);
     // Taro.redirectTo({
     //   url: '/pages/success/index'
     // });
@@ -404,11 +404,17 @@ export default function Index () {
                       <Button variant="contained" sx={{color:themeConsts.bgWhite, backgroundColor:themeConsts.primaryBlack}} onClick={() => {
                         setIsFailed(false);
                         handleSubmit(telNum ?? 0, name, gender);
+                        Taro.navigateTo({
+                          url: '/pages/success/index'
+                        });
                       }
                       }>重试</Button>
                       <Button variant="text" sx={{color:themeConsts.textBlack}} onClick={() => {
                         setIsFailed(false);
                         setIsSubmitting(false);
+                        Taro.navigateTo({
+                          url: '/pages/failed/index'
+                        });
                       }}>取消</Button>
                     </Stack>
                </Box>
