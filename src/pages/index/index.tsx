@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLoad } from '@tarojs/taro'
 import Container from '@mui/material/Container';
 import AppBar from '@mui/material/AppBar';
-import { Box, Button, CssBaseline, Divider, InputAdornment, sliderClasses, Stack, TextField, Toolbar, Typography } from '@mui/material';
+import { Box, Button, CssBaseline, Divider, IconButton, InputAdornment, sliderClasses, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import HeaderBar from '../../components/HeaderBar';
 import CheckButton, { SmallIconButton, TextButton, CheckButtonWithPic } from '@/components/CustomButton';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -353,7 +353,7 @@ export default function Index () {
         )}
         <Box sx={{display:"flex", flexDirection:"row", height:"24px"}}>
           <Box sx={{flexGrow: 1}} />
-          <Button variant="text" size="medium" endIcon={<KeyboardArrowDownIcon fontSize='medium' />} onClick={handleCloseModal}></Button>
+          <IconButton onClick={handleCloseModal} size='small' sx={{color:themeConsts.primaryBlack, fontSize:'14px'}}><KeyboardArrowDownIcon /></IconButton>
         </Box>
         <LocationPicker2 onPlaceChange={handleCenterChange} />
       </BottomSheet>

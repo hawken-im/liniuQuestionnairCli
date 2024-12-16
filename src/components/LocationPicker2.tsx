@@ -20,6 +20,8 @@ function debounce(func: any, wait: number) {
   };
 }
 
+const defaultLocation = [103.874848, 30.617516];
+
 export default function MapContainer({ onPlaceChange }: Props) {
 
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -76,11 +78,11 @@ export default function MapContainer({ onPlaceChange }: Props) {
         if (mapContainerRef.current) {
           map = new AMap.Map(mapContainerRef.current, {
             viewMode: "3D",
-            zoom: 16,
+            zoom: 12,
           });
-
+          const currentLocation = map.getCenter();
           marker = new AMap.Marker({
-            position: [103.874848, 30.617516],
+            position: currentLocation,
           });
           marker.setMap(map);
 
@@ -185,21 +187,41 @@ export default function MapContainer({ onPlaceChange }: Props) {
           handlePlaceClickRef.current = handlePlaceClick
 
           map.on('complete', function () {
-            const newCenter = map.getCenter();
-            marker.setPosition(newCenter);
-            searchNearby(newCenter.lng, newCenter.lat);
+            // 尝试获取用户定位
+            geolocation.getCurrentPosition();
             map.addControl(geolocation);
-            geolocation.on('complete', function(data) {
-                // 定位成功后的回调函数
-                console.log('定位成功:', data);
-                map.setZoomAndCenter(16, [data.position.lng, data.position.lat]); // 设置地图缩放级别和中心点
-              });
-            
-              geolocation.on('error', function(data) {
-                // 定位失败后的回调函数
-                console.error('定位失败:', data);
-              });
+      
+            geolocation.on('complete', function (data) {
+              // 定位成功后的回调函数
+              console.log('定位成功:', data);
+              map.setZoomAndCenter(16, [data.position.lng, data.position.lat]);
+              //searchNearby(data.position.lng, data.position.lat);
+            });
+      
+            geolocation.on('error', function (data) {
+              // 定位失败后的回调函数
+              console.error('定位失败:', data);
+              map.setZoomAndCenter(12, currentLocation);
+              searchNearby(currentLocation.lng, currentLocation.lat);
+            });
           });
+
+          // map.on('complete', function () {
+          //   const newCenter = map.getCenter();
+          //   marker.setPosition(newCenter);
+          //   searchNearby(newCenter.lng, newCenter.lat);
+          //   map.addControl(geolocation);
+          //   geolocation.on('complete', function(data) {
+          //       // 定位成功后的回调函数
+          //       console.log('定位成功:', data);
+          //       map.setZoomAndCenter(16, [data.position.lng, data.position.lat]); // 设置地图缩放级别和中心点
+          //     });
+            
+          //     geolocation.on('error', function(data) {
+          //       // 定位失败后的回调函数
+          //       console.error('定位失败:', data);
+          //     });
+          // });
 
           map.on('moveend', () => {
             setSearchOn(false);
