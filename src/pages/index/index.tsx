@@ -42,14 +42,14 @@ export default function Index () {
   const [hallFloor, setHallFloor] = useState<Set<number>>(new Set());//5
   const [houseSystem, setHouseSystem] = useState<Set<number>>(new Set());//6
 
-  const [telNum, setTelNum] = useState<number | null>(null);
+  const [telNum, setTelNum] = useState<String | null>(null);
   const [name, setName] = useState<string>('');
   const [gender, setGender] = useState<number>(0);
   const [answered, setAnswered] = useState<number>(0);
 
   const data = {
     userName: name,//用户姓名 string
-    userTel: telNum,//用户电话 number
+    userTel: telNum,//用户电话 string
     userGender: gender,//用户性别 number
     placeName: place,//小区名称 string
     placeAddress: address,//小区地址 string
@@ -60,36 +60,45 @@ export default function Index () {
     houseSystem: houseSystem,//全屋系统 index number
   };
 
+  /*
+  {
+  "userName": "爱坤1",
+  "userTel": "666666",
+  "userGender": 1,
+  "placeName": "小区名称长度为3-100",
+  "placeAddress": "小区地址长度为3-100",
+  "area": 100,
+  "remodelingYear": 5,
+  "houseStyle": 1,
+  "hallFloor": 1,
+  "houseSystem": 1
+}
+  */
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFailed, setIsFailed] = useState(false); //如果失败就重试，或返回
 
-  const handleSubmit = async (telNum:number, name:string, gender:number) => {
+  const handleSubmit = async (telNum:string, name:string, gender:number) => {
     setIsSubmitting(true);
     console.log("submit");
-    console.log("place:", place);
-    console.log("area:", area);
-    console.log("remodelingYear:", remodelingYear);
-    console.log("houseStyle:", houseStyle);
-    console.log("hallFloor:", hallFloor);
-    console.log("houseSystem:", houseSystem);
+    console.log("data:", data);
     setTelNum(telNum);
     setName(name);
     setGender(gender);
-    //postData(data);
-    //jump to success page
-    //wait for 3 seconds for test
-    setTimeout(() => {
-      //setIsSubmitting(false);
-      setTimeout(() => {
-        setIsFailed(true);//如果用户点击取消，则跳转到失败页面
-      }, 1000);
-      // Taro.navigateTo({
-      //   url: '/pages/success/index'
-      // });
-    }, 1000);
-    // Taro.redirectTo({
-    //   url: '/pages/success/index'
-    // });
+
+    try {
+      await postData(data);
+      // jump to success page
+      Taro.navigateTo({ 
+        url: '/pages/success/index' 
+      });  
+    } catch (error) {
+      console.error("Error submitting data:", error);
+      // jump to error page
+      setIsFailed(true);
+    } finally {
+      setIsSubmitting(false); 
+    }
   }
 
 
@@ -341,7 +350,7 @@ export default function Index () {
       {/* 在 Footer 组件下方添加一个空的 div，并设置 ref 属性 */}
       <div ref={bottomRef}></div> 
 
-      <Footer available={answered >= NumOfQuestions} onSubmit={(telNum: number, name: string, gender: number) => { handleSubmit(telNum, name, gender) }} />
+      <Footer available={answered >= NumOfQuestions} onSubmit={(telNum: number, name: string, gender: number) => { handleSubmit(String(telNum), name, gender) }} />
 
       <BottomSheet show={showModal} onClose={handleCloseModal}>
         { place !== "选择小区" && (
@@ -403,10 +412,7 @@ export default function Index () {
                       <Typography variant='body1' sx={{fontSize: '18px', fontWeight: 'regular', color: themeConsts.textBlack, mb: 2}}>提交失败，请重试</Typography>
                       <Button variant="contained" sx={{color:themeConsts.bgWhite, backgroundColor:themeConsts.primaryBlack}} onClick={() => {
                         setIsFailed(false);
-                        handleSubmit(telNum ?? 0, name, gender);
-                        Taro.navigateTo({
-                          url: '/pages/success/index'
-                        });
+                        handleSubmit(String(telNum), name, gender);
                       }
                       }>重试</Button>
                       <Button variant="text" sx={{color:themeConsts.textBlack}} onClick={() => {

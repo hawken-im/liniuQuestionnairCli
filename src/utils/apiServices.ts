@@ -1,7 +1,7 @@
 // apiService.ts
+import { API_BASE_URL, API_ENDPOINT, API_PROD_URL } from "@/apiConfig";
 // import { md5 } from 'js-md5'
-
-// const dataSalt = 'shepipi';
+// const dataSalt = 'shepi';
 
 export const postData = async (data: any) => {
     // Add a salt to the data
@@ -16,7 +16,7 @@ export const postData = async (data: any) => {
     // const hash = md5(JSON.stringify(sortedData));
 
     try {
-      const response = await fetch('http://192.168.0.112:8080/liliu/invest/info/save', {
+      const response = await fetch(`${API_BASE_URL}${API_ENDPOINT}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

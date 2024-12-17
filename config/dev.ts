@@ -6,5 +6,9 @@ export default {
     stats: true
   },
   mini: {},
-  h5: {}
+  h5: {
+    devServer: {
+      port: 8080
+    }
+  }
 } satisfies UserConfigExport<'webpack5'>
