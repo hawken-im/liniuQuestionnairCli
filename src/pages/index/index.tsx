@@ -178,10 +178,11 @@ export default function Index () {
       <CssBaseline />
       <AppBar 
         position="sticky" 
-        sx={{bgcolor: '#fff', mx: 0, px: 0 , width: '100%', zIndex:999}}>
+        elevation={0}
+        sx={{bgcolor: '#fff', mx: 0, px: 0 , width: '100%', zIndex:999, borderBottom: '1px solid #e0e0e0'}}>
           {showModal && (
             <Toolbar onClick={handleCloseModal} sx={{alignItems:"center"}}>
-              <Button variant="text" startIcon={<ArrowBackIcon />} onClick={handleCloseModal} />
+              <IconButton onClick={handleCloseModal} size='small' sx={{color:themeConsts.primaryBlack, fontSize:'14px'}}><ArrowBackIcon /></IconButton>
               <Box sx={{ flexGrow: 1 }} />
               <Typography variant="h6" sx={{fontSize: '20px', fontWeight: 'regular', color: themeConsts.textBlack,ml:-4}}>选择小区</Typography>
               <Box sx={{ flexGrow: 1 }} />
@@ -205,7 +206,7 @@ export default function Index () {
               <TextButton
                 checked={place !== "选择小区"}
                 onClick={handleOpenModal}
-                startIcon={<LocationOnIcon sx={{ color: theme.palette.primary.main, fontSize:"24px" }} />}
+                startIcon={<LocationOnIcon sx={{ color: theme.palette.primary.main, fontSize:"20px" }} />}
               >
                 {place.length > 11 ? place.slice(0, 9) + "..." : place}
               </TextButton>
@@ -226,8 +227,11 @@ export default function Index () {
               }}
               id="input-area" placeholder='输入整数' value={area === null ? '' : area} size="small" type="tel"
               sx={{
-                '& .MuiInputBase-input': {  //  更具体的 CSS 选择器
-                fontSize: '16px',},
+                minWidth: '180px',
+                '& .MuiInputBase-input': {
+                  textAlign: 'center', 
+                  fontSize: '14px',
+                  fontWeight: 'medium',},
                 '& fieldset': { 
                   borderRadius: 4,}
               }}
@@ -336,12 +340,9 @@ export default function Index () {
                     </CheckButton>
                   </Grid2>
                 ))}
-            </Grid2>
-            <Divider variant="middle" />
-            <Grid2 container spacing={1} alignItems={"center"} justifyContent={"center"}>
               <CheckButton checked={houseSystem.has(HouseSystemChoices.length)} onClick={()=>{
                 handleHouseSystemCheck(HouseSystemChoices.length);
-              }}>以上均无</CheckButton>
+              }}>无新风软水</CheckButton>
             </Grid2>
           </Stack>
         </QuestionCard>

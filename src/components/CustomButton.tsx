@@ -45,13 +45,13 @@ export const CheckButtonWithPic = ({
       <Box sx={{
         position:"absolute", 
         bottom:'1px', left:'0.5%', 
-        width:'99%', height:'30%', 
+        width:'99%', height:'22%', 
         borderBottomLeftRadius: 16, borderBottomRightRadius: 16,
         backgroundColor:themeConsts.bgGrey,
         opacity: 0.7}}>
         <Typography sx={{
           color: themeConsts.textBlack, 
-          fontSize: '16px', 
+          fontSize: '14px', 
           fontWeight: 'medium',
           textAlign: 'center', p:0}}>{children}
         </Typography>
@@ -94,13 +94,14 @@ export const TextButton = ({
     <Button 
       variant="outlined" 
       sx={{
+        minWidth: '180px',
         borderRadius: 4, 
         borderWidth: "1px", 
         boxShadow: checked ? `0 0 0 1px ${themeConsts.primaryBlack}` : "none",
         borderColor: checked ? themeConsts.primaryBlack : themeConsts.borderGrey,
         backgroundColor: themeConsts.bgWhite,
         color: themeConsts.textBlack,
-        fontSize: '16px',
+        fontSize: '14px',
         fontWeight: 'medium',
       }}
       {...rest} // 将所有其他 props 传递给 Button 组件
@@ -140,13 +141,13 @@ const CheckButton = ({
     <Button 
       variant="outlined" 
       sx={{
-        borderRadius: 4, 
-        borderWidth: "1px", 
+        borderRadius: 8, 
+        borderWidth: "0px", 
         boxShadow: checked ? `0 0 0 1px ${themeConsts.primaryBlack}` : "none",
         borderColor: checked ? themeConsts.primaryBlack : themeConsts.borderGrey,
         backgroundColor: themeConsts.checkBtnBg,
         color: themeConsts.textBlack,
-        fontSize: '16px',
+        fontSize: '14px',
         fontWeight: 'medium',
       }}
       {...rest} // 将所有其他 props 传递给 Button 组件

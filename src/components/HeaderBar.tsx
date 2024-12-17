@@ -4,6 +4,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { themeConsts } from './ThemeWrapper';
+import { Stack } from '@mui/material';
 
 //import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 // import { styled } from '@mui/material';
@@ -28,8 +29,14 @@ import { themeConsts } from './ThemeWrapper';
 function HeaderBar({progress}: {progress: number}) {
 
   return (
-      <Container maxWidth="xl" disableGutters sx={{bgcolor: themeConsts.bgWhite, width: '100%'}}>
-        <Toolbar sx={{height: '60px', display: 'flex', justifyContent: 'space-between'}}>
+      <Container maxWidth="xl" disableGutters sx={{bgcolor: themeConsts.bgWhite, width: '100%', p:0}}>
+        <Stack direction="row" spacing={2} 
+            sx={{
+              bgcolor: themeConsts.bgWhite, 
+              width: '100%', 
+              py:0,px:2, 
+              alignItems: 'center',
+              justifyContent: 'space-between',}}>
           <Box
             sx={{
               backgroundImage: `url(${liniuLogo})`,
@@ -38,19 +45,19 @@ function HeaderBar({progress}: {progress: number}) {
               backgroundPosition: 'center',
               width: {xs:'80px', md:'120px'},
               height: {xs:'36px', md:'54px'},
+              m:0
             }} />
-
-          <Box sx={{ flex: 1 }}> 
+          <Box> 
             <Typography sx={{ 
               fontSize: {xs:'16px', md:'24px'},
               fontWeight: 'thin', 
               textAlign: 'right', 
               color: themeConsts.textBlack, 
-              mr: 1}}> 
+              m: 0}}> 
               「常态焕新」定制清洁服务
             </Typography>
           </Box>
-        </Toolbar>
+          </Stack>
         {/* <BorderLinearProgress variant="determinate" value={progress} /> */}
       </Container>
   );

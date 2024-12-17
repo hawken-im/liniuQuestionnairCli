@@ -77,7 +77,7 @@ export default function Footer({
       <Stack spacing={2}>
             <Typography sx={{fontSize: '18px', fontWeight: 'medium', color: themeConsts.textBlack}}>联系方式</Typography>
             <Grid2 container spacing={0}>
-              <Grid2 size='grow'>
+              <Grid2 size={'grow'}>
               <TextField
                 ref={nameInputRef}
                 onChange={(event) => {
@@ -85,7 +85,9 @@ export default function Footer({
                 }}
                 id="input-area-name" placeholder='称呼' value={name} type="text"
                 color={"info"}
-                sx={{'& .MuiInputBase-input': {  //  更具体的 CSS 选择器
+                sx={{
+                  minWidth: '180px',
+                  '& .MuiInputBase-input': {  //  更具体的 CSS 选择器
                   fontSize: '14px'}
                 }}
                 slotProps={{
@@ -103,10 +105,9 @@ export default function Footer({
                 variant="standard"
               />
               </Grid2>
-              <Grid2 size='auto'>
+              <Grid2 size={'auto'}>
                 <Stack direction="row" spacing={0}>
                 <SmallTextButton checked={!gender} onClick={() => setGender(false)}>女士</SmallTextButton>
-                <Switch size='medium' checked={gender} onChange={handleGenderSwitch} color='default'></Switch>
                 <SmallTextButton checked={gender} onClick={() => setGender(true)}>先生</SmallTextButton>
                 </Stack>
               </Grid2>

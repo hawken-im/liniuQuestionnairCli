@@ -266,7 +266,7 @@ export default function MapContainer({ onPlaceChange }: Props) {
           id="tip-input" 
           onFocus={handleFocus} onBlur={handleBlur} 
           hiddenLabel placeholder="请输入地址" variant="standard" size='small' 
-          sx={{ width:"100%", px:1,
+          sx={{ width:"100%", p:1, m:0,
             '& .MuiInputBase-input': {fontSize: '18px'},
             '& fieldset': {
                 borderColor: themeConsts.borderGrey,
