@@ -14,7 +14,7 @@ export const postData = async (data: any) => {
     // // md5 hash the data
     // // TODO:注意按照utf8编码的顺序对data进行md5加密
     // const hash = md5(JSON.stringify(sortedData));
-
+    console.log('url:', `${API_BASE_URL}${API_ENDPOINT}`);
     try {
       const response = await fetch(`${API_BASE_URL}${API_ENDPOINT}`, {
         method: 'POST',
