@@ -1,7 +1,7 @@
 
 {
     "API_BASE_URL": "https://liniu.funai.world:5000",
-    "API_ENDPOINT": "/submit",
+    "API_ENDPOINT": "/api/submit",
     "API_PROD_URL": "https://liniu.funai.world",
     "NumOfQuestions" : 6,
     "HouseModelChoices" : ["跃层", "一楼或顶楼带花园", "别墅"],
