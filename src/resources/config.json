@@ -1,0 +1,12 @@
+
+{
+    "API_BASE_URL": "http://localhost:8080",
+    "API_ENDPOINT": "/liliu/invest/info/save",
+    "API_PROD_URL": "https://liniu.funai.world",
+    "NumOfQuestions" : 6,
+    "HouseModelChoices" : ["跃层", "一楼或顶楼带花园", "别墅"],
+    "RemodelingYearChoices" : ["2 年以内", "2 - 5 年", "5 - 8 年", "8 年以上"],
+    "HouseStyleChoices" : ["简约轻奢", "传统中式", "欧美复古", "古典欧式"],
+    "HallFloorChoices" : ["大理石", "瓷砖", "地毯", "实木地板", "复合地板"],
+    "HouseSystemChoices" : ["新风", "全屋软水"]
+}

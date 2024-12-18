@@ -18,14 +18,19 @@ import Footer from '@/components/Footer';
 import Taro from '@tarojs/taro';
 
 import { postData } from '@/utils/apiServices';
+import config from "@/resources/config.json";
 
-const NumOfQuestions = 6;//这个问卷有多少个问题
-//const HouseModelChoices = ["跃层", "一楼或顶楼带花园", "别墅"];
-const RemodelingYearChoices = ["2 年以内", "2 - 5 年", "5 - 8 年", "8 年以上"];
-//const HouseStyleChoices = ["简约轻奢", "传统中式", "欧美复古", "古典欧式", "其它风格"];
-const HouseStyleChoices = ["简约轻奢", "传统中式", "欧美复古", "古典欧式"];
-const HallFloorChoices = ["大理石", "瓷砖", "地毯", "实木地板", "复合地板"];
-const HouseSystemChoices = ["新风", "全屋软水"];
+const {
+  NumOfQuestions, RemodelingYearChoices, HouseStyleChoices, HallFloorChoices, HouseSystemChoices
+ } = config;
+
+// const NumOfQuestions = 6;//这个问卷有多少个问题
+// //const HouseModelChoices = ["跃层", "一楼或顶楼带花园", "别墅"];
+// const RemodelingYearChoices = ["2 年以内", "2 - 5 年", "5 - 8 年", "8 年以上"];
+// //const HouseStyleChoices = ["简约轻奢", "传统中式", "欧美复古", "古典欧式", "其它风格"];
+// const HouseStyleChoices = ["简约轻奢", "传统中式", "欧美复古", "古典欧式"];
+// const HallFloorChoices = ["大理石", "瓷砖", "地毯", "实木地板", "复合地板"];
+// const HouseSystemChoices = ["新风", "全屋软水"];
 //注意最后在提交的时候对应选项提交完整的string
 
 
@@ -54,6 +59,13 @@ export default function Index () {
     placeName: place,//小区名称 string
     placeAddress: address,//小区地址 string
     area: area,//面积 number
+    // remodelingYear: remodelingYear !== null ? RemodelingYearChoices[remodelingYear] : '',//装修年限 string
+    // houseStyle: houseStyle !== null ? HouseStyleChoices[houseStyle] : '',//风格 string
+    // hallFloor: hallFloor.forEach((index) => {
+    //     let multipleHallFloorChoices = '';
+    //     multipleHallFloorChoices += `${HallFloorChoices[hallFloor[index]]}`;
+    //     return multipleHallFloorChoices;
+    //   }),//地面铺装 string
     remodelingYear: remodelingYear,//装修年限 index number
     houseStyle: houseStyle,//风格 index number
     hallFloor: hallFloor,//地面铺装 index number

@@ -16,7 +16,7 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
       828: 1.81 / 2
     },
     sourceRoot: 'src',
-    outputRoot: 'dist',
+    outputRoot: 'liniu',
     plugins: [],
     defineConstants: {
     },

@@ -1,5 +1,5 @@
 {
-  "miniprogramRoot": "./dist",
+  "miniprogramRoot": "./liniu",
   "projectname": "liniuQuest",
   "description": "liniu questionnare",
   "appid": "touristappid",

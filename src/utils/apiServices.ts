@@ -1,19 +1,11 @@
 // apiService.ts
-import { API_BASE_URL, API_ENDPOINT, API_PROD_URL } from "@/apiConfig";
-// import { md5 } from 'js-md5'
-// const dataSalt = 'shepi';
+//import { API_BASE_URL, API_ENDPOINT } from "@/apiConfig";
+import config from "@/resources/config.json";
 
 export const postData = async (data: any) => {
-    // Add a salt to the data
-    // const saltedData = { ...data, salt: dataSalt };
-    // //sort the data
-    // const sortedData = Object.keys(saltedData).sort().reduce((acc: { [key: string]: any }, key) => {
-    //   acc[key] = data[key];
-    //   return acc;
-    // }, {});
-    // // md5 hash the data
-    // // TODO:注意按照utf8编码的顺序对data进行md5加密
-    // const hash = md5(JSON.stringify(sortedData));
+    //read the url from config.json:
+    const { API_BASE_URL, API_ENDPOINT } = config;
+
     console.log('url:', `${API_BASE_URL}${API_ENDPOINT}`);
     try {
       const response = await fetch(`${API_BASE_URL}${API_ENDPOINT}`, {
@@ -21,7 +13,8 @@ export const postData = async (data: any) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: data,
+        //stringify the data
+        body: JSON.stringify(data),
       });
   
       if (!response.ok) {
