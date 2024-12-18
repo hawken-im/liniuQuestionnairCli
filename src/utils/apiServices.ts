@@ -24,8 +24,18 @@ export const postData = async (data: any) => {
       const result = await response.json();
       console.log('Post request successful:', result);
       return result; // Return the response data
+    
     } catch (error) {
       console.error('Error posting data:', error);
-      throw error; // Re-throw the error to be handled by the caller
-    }
+      if (error instanceof TypeError) {
+        // Network error or fetch API error
+        return { success: false, error: 'Network error' }; 
+      } else if (error instanceof Error) {
+        // HTTP error or other errors
+        return { success: false, error: error.message };
+      } else {
+        // Unknown error
+        return { success: false, error: 'An unknown error occurred' };
+      }
+  }
   };

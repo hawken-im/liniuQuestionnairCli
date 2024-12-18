@@ -20,6 +20,19 @@ import Taro from '@tarojs/taro';
 import { postData } from '@/utils/apiServices';
 import config from "@/resources/config.json";
 
+interface QuestionnaireData {
+  userName: string;
+  userTel: string;
+  userGender: number;
+  placeName: string;
+  placeAddress: string;
+  area: number;
+  remodelingYear: number; // Or the actual year value
+  houseStyle: number;   // Or a string representing the house style
+  hallFloor: number[];    // Or an array of numbers representing the floor types
+  houseSystem: number[];  // Or an array of numbers representing the house system
+}
+
 const {
   NumOfQuestions, RemodelingYearChoices, HouseStyleChoices, HallFloorChoices, HouseSystemChoices
  } = config;
@@ -47,18 +60,18 @@ export default function Index () {
   const [hallFloor, setHallFloor] = useState<Set<number>>(new Set());//5
   const [houseSystem, setHouseSystem] = useState<Set<number>>(new Set());//6
 
-  const [telNum, setTelNum] = useState<String | null>(null);
+  const [telNum, setTelNum] = useState<string | null>(null);
   const [name, setName] = useState<string>('');
   const [gender, setGender] = useState<number>(0);
   const [answered, setAnswered] = useState<number>(0);
 
-  const data = {
+  const data: QuestionnaireData = {
     userName: name,//用户姓名 string
-    userTel: telNum,//用户电话 string
+    userTel: telNum ?? '',//用户电话 string
     userGender: gender,//用户性别 number
     placeName: place,//小区名称 string
     placeAddress: address,//小区地址 string
-    area: area,//面积 number
+    area: area ?? 0,//面积 number
     // remodelingYear: remodelingYear !== null ? RemodelingYearChoices[remodelingYear] : '',//装修年限 string
     // houseStyle: houseStyle !== null ? HouseStyleChoices[houseStyle] : '',//风格 string
     // hallFloor: hallFloor.forEach((index) => {
@@ -66,10 +79,10 @@ export default function Index () {
     //     multipleHallFloorChoices += `${HallFloorChoices[hallFloor[index]]}`;
     //     return multipleHallFloorChoices;
     //   }),//地面铺装 string
-    remodelingYear: remodelingYear,//装修年限 index number
-    houseStyle: houseStyle,//风格 index number
-    hallFloor: hallFloor,//地面铺装 index number
-    houseSystem: houseSystem,//全屋系统 index number
+    remodelingYear: remodelingYear ?? 0,//装修年限 index number
+    houseStyle: houseStyle ?? 0,//风格 index number
+    hallFloor: Array.from(hallFloor),//地面铺装 index number
+    houseSystem: Array.from(houseSystem),//全屋系统 index number
   };
 
   /*
