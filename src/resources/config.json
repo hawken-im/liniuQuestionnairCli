@@ -1,6 +1,6 @@
 
 {
-    "API_BASE_URL": "http://127.0.0.1:5000",
+    "API_BASE_URL": "http://8.210.108.212:5000",
     "API_ENDPOINT": "/submit",
     "API_PROD_URL": "https://liniu.funai.world",
     "NumOfQuestions" : 6,
