@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLoad } from '@tarojs/taro'
 import Container from '@mui/material/Container';
 import AppBar from '@mui/material/AppBar';
-import { Box, Button, CssBaseline, Divider, IconButton, InputAdornment, sliderClasses, Stack, TextField, Toolbar, Typography } from '@mui/material';
+import { Box, Button, CssBaseline, IconButton, InputAdornment, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import HeaderBar from '../../components/HeaderBar';
 import CheckButton, { SmallIconButton, TextButton, CheckButtonWithPic } from '@/components/CustomButton';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
